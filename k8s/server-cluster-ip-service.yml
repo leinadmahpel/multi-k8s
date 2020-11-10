@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: server-cluster-ip-service
+spec: # spec specifies how the service behaves
+    type: ClusterIP
+    selector: # need to provide a selector to tell the service what set of pods it needs to provide access to
+        component: server # this is derived from server-deployment.yml under the template property
+    ports:
+        - port: 5000
+          targetPort: 5000

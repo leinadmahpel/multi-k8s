@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+    name: server-deployment
+spec:
+    replicas: 3 # this is the number of pods we are going to setup
+    selector: # this is the selector that the Deployment service will use to find the set of pods created by master that it's going to control
+        matchLabels:
+            component: server # for the label, it doesnt have to be component : server, it could be partOfApi : asdf
+    template: # this is our pod template
+        metadata:
+            labels: # this must matchup with whatever we have under matchLabels
+                component: server
+        spec: # this will customize the behavior of each pod that gets created
+            containers: # provide a list of containers that this pod is supposed to run
+                - name: server
+                  image: danwithaplan112/multi-server # note: the express api server expects env variables to be set within the container so it can use it to connect to redis and postgres
+                  ports:
+                    - containerPort: 5000
+                  env:
+                    - name: REDIS_HOST
+                      value: redis-cluster-ip-service
+                    - name: REDIS_PORT
+                      value: '6379'
+                    - name: PGUSER
+                      value: postgres
+                    - name: PGHOST
+                      value: postgres-cluster-ip-service
+                    - name: PGPORT
+                      value: '5432'
+                    - name: PGDATABASE
+                      value: postgres
+                    - name: PGPASSWORD # <-- this is the env variable, nothing related to the name of the secret
+                      valueFrom: # <- get the value from some configuration that we will specify here
+                        secretKeyRef:
+                          name: pgpassword # name of the secret that we want the PGPASSWORD value to come from
+                          key: PGPASSWORD # this is the key within the secret that we want to reference

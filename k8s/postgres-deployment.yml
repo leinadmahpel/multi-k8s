@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
+      containers:
+        - name: postgres
+          image: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword 
+                  key: PGPASSWORD
+            # - name: POSTGRES_HOST_AUTH_METHOD
+            #   value: trust # If you set POSTGRES_HOST_AUTH_METHOD to trust, then POSTGRES_PASSWORD is not required.
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#     name: postgres-deployment
+# spec:
+#     replicas: 1
+#     selector:
+#         matchLabels:
+#             component: postgres
+#     template: # this is the template that is used by this deployment to create the replica # of pods
+#         metadata:
+#             labels:
+#                 component: postgres
+#         spec:
+#             volumes:
+#                 - name: postgres-storage
+#                   persistentVolumeClaim:
+#                     claimName: database-persistent-volume-claim
+#             containers:
+#                 - name: postgres
+#                   image: postgres
+#                   ports:
+#                     - containerPort: 5432 # this is the default port for postgres
+#                   volumeMounts:
+#                     - name: postgres-storage # anything that postgres (the one running in the container) stores at the mountPath (i.e path where postgres persists its data into the data directory) will be actually stored inside the persistent volume (same concept as docker volumes)
+#                       mountPath: /var/lib/postgresql/data # (this is also where the data directory will be where postgres uses for storing data on the harddrive) this specifies where inside the container should this storage by made available, and that this data directory will be backed up to the persistent volume
+#                       subPath: postgres # (NOTE: this field is very specific to postgres only so it might not be used for other datastores) this specifies the path name in the persistent volume of where to backup the mountPath data to where subPath is a path in the persistent volume, not the mount path within the container
