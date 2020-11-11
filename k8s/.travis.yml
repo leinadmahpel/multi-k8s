@@ -1,0 +1,10 @@
+sudo: required
+services:
+  - docker
+before_install:
+  - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d # this command is used to retrieve the encrypted version of service-account.json that's stored in travis and then unencrypt it so it can use it to authenticate against GoogleCloud
+  # run first two commands to setup GoogleCloud SDK CLI locally on your travis VM
+  - curl https://sdk.cloud.google.com | bash > /dev/null; # this will download GoogleCloud SDK so we can use the GoogleCloud CLI, and then install it locally on our VM instance that is assigned to us by Travis CI to perform the build and what not
+  - source $HOME/google-cloud-sdk/path.bash.inc # apply the path.bash.inc config file that will modify our sh inside of our local instance of Travis CI by using the source command
+  - gcloud components update kubectl # using the now installed Googlecloud cli, install the kubectl cli
+  - gcloud auth activate-service-account --key-file service-account.json # authnz/authz with GoogleCloud by providing it the a file (i.e. calling it service-account.json, can be named anything) where in it we store our IAM credentials
