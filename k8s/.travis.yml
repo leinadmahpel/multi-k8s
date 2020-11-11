@@ -1,10 +1,28 @@
 sudo: required
 services:
   - docker
+env:
+  global:
+    - SHA=$(git rev-parse HEAD) # this will determine the current commit git sha and store it in the env var SHA within our Travis environment (with this, we can access this env var inside our deploy.sh)
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1 # configure the googlecloud sdk cli to not display any prompts that require user input
 before_install:
-  - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d # this command is used to retrieve the encrypted version of service-account.json that's stored in travis and then unencrypt it so it can use it to authenticate against GoogleCloud
+  - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d # this command is used to retrieve the encrypted version of service-account.json that's stored in travis and then unencrypt it, stores it in our root project directory, so it can use it to authenticate against GoogleCloud
   # run first two commands to setup GoogleCloud SDK CLI locally on your travis VM
   - curl https://sdk.cloud.google.com | bash > /dev/null; # this will download GoogleCloud SDK so we can use the GoogleCloud CLI, and then install it locally on our VM instance that is assigned to us by Travis CI to perform the build and what not
   - source $HOME/google-cloud-sdk/path.bash.inc # apply the path.bash.inc config file that will modify our sh inside of our local instance of Travis CI by using the source command
   - gcloud components update kubectl # using the now installed Googlecloud cli, install the kubectl cli
   - gcloud auth activate-service-account --key-file service-account.json # authnz/authz with GoogleCloud by providing it the a file (i.e. calling it service-account.json, can be named anything) where in it we store our IAM credentials
+  - gcloud config set project multi-k8s-295221
+  - gcloud config set compute/zone us-central1-c # configure the compute zone since google cloud has many data centers around the world and we want to configure the googlecloud cli to connect to the datacenter that hosts our k8s cluster
+  - gcloud container clusters get-credentials multi-cluster # configure the cli to know which k8s cluster it should issue commands to by setting the cluster name
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t leinadmahpel/react-test123 -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true leinadmahpel/react-test123 npm test
+
+deploy:
+  provider: script # this tells travis to just run the script file for us
+  script: bash ./deploy.sh # specify a command to run that will essentially be a script that we want travis to execute. the script file that we will create will be called deploy.sh
+  on:
+    branch: master # only do the deployment i.e. run the script command defined above if we push changes to the github multi-k8s master branch
