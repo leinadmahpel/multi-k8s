@@ -6,7 +6,7 @@ metadata:
     kubernetes.io/ingress.class: nginx # this tells kubernetes that we want to create an ingress controller based on the 'k8s nginx ingress project'
     nginx.ingress.kubernetes.io/use-regex: 'true'
     nginx.ingress.kubernetes.io/rewrite-target: /$1 # configures how our copy of nginx behaves (in this case, it will rewrite the inbound path to just / . for example - if inbound path is /api, then nginx will rewrite it to just /)
-    # certmanager.k8s.io/cluster-issuer: 'letsencrypt-prod'
+    # certmanager.io/cluster-issuer: 'letsencrypt-prod'
     # nginx.ingress.kubernetes.io/ssl-redirect: 'false'
 spec: 
   rules:

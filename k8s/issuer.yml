@@ -8,4 +8,7 @@ spec:
     email: 'dnl.lepham@gmail' # this email is not used for anything other than by the CA just to have it on hand during the entire process
     privateKeySecretRef:
       name: letsencrypt-prod
-    http01: {}
+    solvers:
+      http01:
+        ingress:
+          class: nginx
