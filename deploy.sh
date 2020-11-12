@@ -1,6 +1,6 @@
 docker build -t danwithaplan112/multi-client:latest -t danwithaplan112/multi-client:$SHA -f ./client/Dockerfile ./client
 docker build -t danwithaplan112/multi-server:latest -t danwithaplan112/multi-server:$SHA -f ./server/Dockerfile ./server
-docker build -t danwithaplan112/multi-worker:latest -f -t danwithaplan112/multi-worker:$SHA ./worker/Dockerfile ./worker
+docker build -t danwithaplan112/multi-worker:latest -t danwithaplan112/multi-worker:$SHA ./worker/Dockerfile ./worker
 
 docker push danwithaplan112/multi-client:latest
 docker push danwithaplan112/multi-server:latest
