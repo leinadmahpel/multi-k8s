@@ -1,4 +1,4 @@
-apiVersion: cert-manager.io/v1alpha2 # certmanager.k8s.io/v1alpha1 # apiVersion is essentially a bucket of different object types that we can pull from
+apiVersion: cert-manager.io/v1alpha2 # apiVersion is essentially a bucket of different object types that we can pull from
 kind: ClusterIssuer # reach out to the certmanager.k8s.io/v1alpha1 bucket of objects and we want to be able to create an issuer type object
 metadata:
   name: letsencrypt-prod
