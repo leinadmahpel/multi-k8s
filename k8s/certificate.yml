@@ -1,0 +1,21 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: leinadmahpel-tls
+spec:
+  secretName: leinadmahpel-secret # this specifies where the secret should be stored after the cert is obtained by the cert manager
+  # we do not have to create the secret ahead of time b/c it will automatically be created by the Cert Manager once it has obtained the certificate from the CA
+  issuerRef: # the issuerRef is a reference to the issuer object that we setup and used to obtain the certificate from the CA
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: leinadmahpel.org # this certificate is good for any address i.e. domain name of "leinadmahpel.org"
+  dnsNames: # list of all the domains that should be associated with the certificate
+    - leinadmahpel.org
+    - www.leinadmahpel.org
+  acme:
+    config:
+      - http01:
+          ingressClass: nginx
+        domains: # these are the domain names that are used/accessed during the verification process between the cert manager and the CA to make sure we actually have access to the list of the domain names
+          - leinadmahpel.org
+          - www.leinadmahpel.org

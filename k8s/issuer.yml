@@ -1,0 +1,11 @@
+apiVersion: certmanager.k8s.io/v1alpha1 # apiVersion is essentially a bucket of different object types that we can pull from
+kind: ClusterIssuer # reach out to the certmanager.k8s.io/v1alpha1 bucket of objects and we want to be able to create an issuer type object
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory # the server that the cert manager should reach out to when it tries to establish the verification process (this will essentially be a link to the letsencrypt api that will be used to setup the communication between the cert manager and the CA)
+    email: 'dnl.lepham@gmail' # this email is not used for anything other than by the CA just to have it on hand during the entire process
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    http01: {}
