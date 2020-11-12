@@ -1,5 +1,5 @@
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
   name: database-persistent-volume-claim
   annotations:
@@ -8,5 +8,5 @@ spec:
   accessModes: [ReadWriteOnce] # alternatives: ReadWriteMany, ReadOnlyMany, and more
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
   # storageClassName: standard <-- this is the default. you can check your storage options via 'kubectl get storageclass' and 'kubectl describe storageclass'
