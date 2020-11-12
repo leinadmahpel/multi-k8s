@@ -8,5 +8,5 @@ spec:
   accessModes: [ReadWriteOnce] # alternatives: ReadWriteMany, ReadOnlyMany, and more
   resources:
     requests:
-      storage: 2Gi
+      storage: 5Gi
   # storageClassName: standard <-- this is the default. you can check your storage options via 'kubectl get storageclass' and 'kubectl describe storageclass'
